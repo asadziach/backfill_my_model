@@ -26,8 +26,14 @@ if !BackFillModel.envCheck
     return false
 end #if
 
+# ----------- dialog ----------------
+
+  return nil if not BackFillModel.dialog ### do dialog...
+
+###
+
 @sfix=Time::now.to_i.to_s[3..-1]
-wal_threshold = 0.0787402.to_l # 2mm = 0.0787402inch
+wal_threshold = (@min_wall_inch.to_f * 0.0393701 ) # inch to mm
 
 mod = Sketchup.active_model # Open model
 ent = mod.entities # All entities in model
@@ -99,11 +105,7 @@ end#if
 
 ###
 
-# ----------- dialog ----------------
 
-  return nil if not BackFillModel.dialog ### do dialog...
-
-###
 
 #### ------- slice & z inc ------------------------------
 
@@ -329,6 +331,8 @@ def BackFillModel::dialog
 
    resolution = ["0.1", "0.2", "0.3", "0.4", "0.5"].join('|')
 
+   wall_thickness = ["0.5", "1.0", "1.5", "2", "2.5"].join('|')
+
    mcolours=Sketchup.active_model.materials
 
    colours=[]
@@ -343,15 +347,15 @@ def BackFillModel::dialog
 
    colours=colours.join('|')
 
-   prompts = ["Slice mm: ","Colour: "]
+   prompts = ["Slice mm: ","Colour: ", "Min Wall Thickness mm"]
 
    title = "Paramters"
 
    @colour="<Default>" if not @colour
 
-   values = [@resolution,@colour]
+   values = [@resolution,@colour, @min_wall_inch]
 
-   popups = [resolution,colours]
+   popups = [resolution,colours, wall_thickness]
 
    results = inputbox(prompts,values,popups,title)
 
@@ -359,7 +363,7 @@ def BackFillModel::dialog
 
 ### do processing of results
 
-@resolution,@colour=results
+@resolution,@colour,@min_wall_inch=results
 
 true
 
