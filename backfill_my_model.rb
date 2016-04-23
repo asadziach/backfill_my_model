@@ -59,15 +59,12 @@ sel_group_ent.each { |f|
 
 selected = sel[0]
 
-###
 
-# -------------- set up @units and @percent in def dialog for later...
 
 # -------------- make cutting disc face at xy bounds
 
 ###
 
-###
 
 bb = selected.bounds
 
@@ -259,6 +256,9 @@ colour=nil if colour=="<Default>"
 
 area = 0
 
+too_short_faces = Set.new []
+too_short_edges = Set.new []
+
 for f in volentities
 
     if f.typename=="Face"    
@@ -267,17 +267,33 @@ for f in volentities
         area=(area+f.area) 
 
         edges = f.edges  # for all edages of this face
-         edges.each { |e|
-            
+
+        short_edges = 0
+
+        edges.each { |e|
             if e.length < wal_threshold
-                 puts e.length 
-                 
-                f.material = [128,0,0]
-            end
-         }
+                too_short_edges.add(e)
+                short_edges = short_edges + 1 
+            end #if
+        }
+        too_short_faces.add(f) if short_edges >= 2
     end #if
 
 end#for f
+
+for f in too_short_faces
+                 
+        f.material = [128,0,0]
+end #for
+
+for e in too_short_edges
+                 
+    for f in e.faces
+        #if (external_faces.include? f)                 
+            f.material = [0,128,0]
+        #end #if
+    end #for
+end #for
 
 ###
 
