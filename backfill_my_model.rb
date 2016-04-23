@@ -43,8 +43,6 @@ sel_group = sel[0]
 sel_size = sel_group.bounds.max # Get the first selected group
 sel_group_ent = sel_group.entities
 
-#puts sel_size
-
 mod.start_operation("coloring faces")
 
 puts wal_threshold
