@@ -11,18 +11,76 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
+########################################################################
+
+require 'sketchup.rb'
+
+class BackFill
+
+########################################################################
+########################################################################
+def BackFill::envCheck
+
+if (Sketchup.version.split(".")[0].to_i<16)
+
+     UI.beep
+
+     UI.messagebox("Sorry. Only verified with Sketchup version 16.")
+
+     return false
+
+end#if
+
+mod = Sketchup.active_model # Open model
+ent = mod.entities # All entities in model
+sel = mod.selection # Current selection
+
+if sel.empty?
+
+    UI.beep
+
+    UI.messagebox("NO Selection !")
+
+    return false
+
+end #if
+
+if sel[1]
+
+    UI.beep
+
+    UI.messagebox("Selection MUST be ONE Group or Component !")
+
+    return false
+
+end# if
+
+if sel[0].typename != "Group" and sel[0].typename != "ComponentInstance"
+
+    UI.beep
+
+    UI.messagebox("Selection is NOT a Group or Component !")
+
+    return false
+end#if
+
+return true
+
+end #BackFill::envCheck
+
+########################################################################
+########################################################################
+def BackFill::slice
+
+if !BackFill.en
+    return false
+end #if
 
 wal_threshold = 0.0787402.to_l # 2mm = 0.0787402inch
 
 mod = Sketchup.active_model # Open model
 ent = mod.entities # All entities in model
 sel = mod.selection # Current selection
-
-    # Verify selection
-if mod.selection.empty?
-    UI.messagebox('No Groups or Components selected.')
-    return
-end
 
 sel_group = sel[0]
 sel_size = sel_group.bounds.max # Get the first selected group
@@ -50,3 +108,5 @@ sel_group_ent.each { |f|
 
 mod.commit_operation
 
+end #BackFill::slice 
+end #class
