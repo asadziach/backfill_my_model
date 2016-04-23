@@ -181,7 +181,7 @@ disc = ent.add_group
 
 discentities = disc.entities
 
-disccircle = Volume.circle(ctr,[0,0,-1],rad,24)
+disccircle = BackFillModel.circle(ctr,[0,0,-1],rad,24)
 
 discentities.add_face disccircle
 
@@ -355,6 +355,22 @@ mod.commit_operation
 
 puts volume
 
+mod.start_operation("Cleanup Temp Geometry")
+
+if UI.messagebox("Remove added gematry ?  ",MB_YESNO,"Cleanup Temp ?") == 6 ### 6=YES 7=NO
+    for f in volentities
+
+      f.erase!
+
+    end#for f
+end#if
+
+# ---------------------- Close/commit group
+
+mod.commit_operation
+
+#-----------------------
+
 end #BackFillModel::slice 
 
 def BackFillModel::dialog
@@ -401,7 +417,33 @@ true
 
 end #def dialog
 
-end #class
+########################################################################
+########################################################################
+# --- Function for generating points on a circle
+def BackFillModel::circle(center,normal,radius,numseg)
+    # Get the x and y axes
+    axes = Geom::Vector3d.new(normal).axes
+    center = Geom::Point3d.new(center)
+    xaxis = axes[0]
+    yaxis = axes[1]
+    xaxis.length = radius
+    yaxis.length = radius
+    # compute the points
+    da = (Math::PI * 2) / numseg
+    pts = []
+    for i in 0...numseg do
+        angle = i * da
+        cosa = Math.cos(angle)
+        sina = Math.sin(angle)
+        vec = Geom::Vector3d.linear_combination(cosa,xaxis,sina,yaxis)
+        pts.push(center + vec)
+    end
+    # close the circle
+    pts.push(pts[0].clone)
+    pts
+end #def BackFillModel""circle
+
+end #class BackFillModel
 
 ########################################################################
 ########################################################################
