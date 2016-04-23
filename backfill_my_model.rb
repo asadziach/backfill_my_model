@@ -267,13 +267,21 @@ area = 0
 
 for f in volentities
 
-  f.material=colour if f.typename=="Face"
+    if f.typename=="Face"    
+        f.material=colour 
 
-  area=(area+f.area) if f.typename=="Face"
+        area=(area+f.area) 
 
-  ###f.erase! if f.typename == "Edge" and not f.faces[0]
-
-  f.hidden= true if (f.valid? && f.typename=="Edge") && @hidden=="Yes"
+        edges = f.edges  # for all edages of this face
+         edges.each { |e|
+            
+            if e.length < wal_threshold
+                 puts e.length 
+                 
+                f.material = [128,0,0]
+            end
+         }
+    end #if
 
 end#for f
 
