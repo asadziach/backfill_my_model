@@ -12,7 +12,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 ########################################################################
-
+require 'set'
 require 'sketchup.rb'
 
 class BackFillModel
@@ -45,19 +45,13 @@ sel_group_ent = sel_group.entities
 
 mod.start_operation("coloring faces")
 
-puts wal_threshold
-    # Do this for each face
+
+external_faces = Set.new []
+
+ # Do this for each face
 sel_group_ent.each { |f|
     if f.typename == "Face"
-        edges = f.edges  # for all edages of this face
-         edges.each { |e|
-            
-            if e.length < wal_threshold
-                 puts e.length 
-                 
-                f.material = [128,0,0]
-            end
-         }
+        external_faces.add(f)
     end
 }
 
