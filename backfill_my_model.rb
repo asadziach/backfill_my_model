@@ -15,11 +15,11 @@
 
 require 'sketchup.rb'
 
-class BackFill
+class BackFillModel
 
 ########################################################################
 ########################################################################
-def BackFill::envCheck
+def BackFillModel::envCheck
 
 if (Sketchup.version.split(".")[0].to_i<16)
 
@@ -70,9 +70,9 @@ end #BackFill::envCheck
 
 ########################################################################
 ########################################################################
-def BackFill::slice
+def BackFillModel::slice
 
-if !BackFill.en
+if !BackFillModel.envCheck
     return false
 end #if
 
@@ -108,5 +108,30 @@ sel_group_ent.each { |f|
 
 mod.commit_operation
 
-end #BackFill::slice 
+end #BackFillModel::slice 
 end #class
+
+########################################################################
+########################################################################
+if( not file_loaded?("backfill_my_model.rb") )
+
+add_separator_to_menu("Plugins")
+
+UI.menu("Plugins").add_item("Back Fill My Model") {BackFillModel.slice }
+
+
+   UI.add_context_menu_handler do | menu |
+
+      if (Sketchup.active_model.selection[0].typename == "Group" or Sketchup.active_model.selection[0].typename == "ComponentInstance")
+
+         menu.add_separator
+
+         menu.add_item("Back Fill My Model") {BackFillModel.slice  }
+
+      end #if ok
+
+   end #do menu
+
+end#if
+
+file_loaded("backfill_my_model.rb")
