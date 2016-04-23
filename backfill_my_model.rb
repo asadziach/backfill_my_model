@@ -76,6 +76,7 @@ if !BackFillModel.envCheck
     return false
 end #if
 
+@sfix=Time::now.to_i.to_s[3..-1]
 wal_threshold = 0.0787402.to_l # 2mm = 0.0787402inch
 
 mod = Sketchup.active_model # Open model
@@ -106,9 +107,300 @@ sel_group_ent.each { |f|
     end
 }
 
+###
+
+selected = sel[0]
+
+###
+
+# -------------- set up @units and @percent in def dialog for later...
+
+# -------------- make cutting disc face at xy bounds
+
+###
+
+###
+
+bb = selected.bounds
+
+xmin = bb.min.x
+
+ymin = bb.min.y
+
+xmax = bb.max.x
+
+ymax = bb.max.y
+
+zmin = bb.min.z
+
+zmax = bb.max.z
+
+###
+
+if xmin == xmax or ymin == ymax or zmin == zmax
+
+   UI.beep
+
+   UI.messagebox("The Selection has no Volume !")
+
+   return nil
+
+end#if
+
+###
+
+# ----------- dialog ----------------
+
+  return nil if not BackFillModel.dialog ### do dialog...
+
+###
+
+#### ------- slice & z inc ------------------------------
+
+slice = @resolution.to_f * 0.0393701 ### convert mm to inches
+
+increment_z = (zmax-zmin)/(((zmax-zmin)/slice).ceil)
+
+###
+
+apex = Geom.linear_combination(0.5,[xmin,ymin,zmax+2],0.5,[xmax,ymax,zmax+2])
+
+### +2 puts it above top ( for text loc'n )
+
+pnt1 = [xmin,ymin,zmin] 
+
+pnt2 = [xmax,ymax,zmin] 
+
+ctr = Geom.linear_combination(0.5,pnt1,0.5,pnt2)
+
+rad = (pnt1.distance pnt2)### make a LOT bigger than bb ###v1.3
+
+###
+
+disc = ent.add_group
+
+discentities = disc.entities
+
+disccircle = Volume.circle(ctr,[0,0,-1],rad,24)
+
+discentities.add_face disccircle
+
+###
+
+#--------------------------- reset Z max and min's
+
+
+zmin = zmin+(increment_z/ 2)
+
+###
+
+# ------------------------ do each of slice
+
+vol=ent.add_group
+
+volentities=vol.entities
+
+vol.name="Volume-"+@sfix
+
+
+### loop through all possible slices - bottom up
+
+n = ((zmax-zmin)/slice).ceil
+
+c = 0
+
+z = increment_z/ 2 
+
+while z < zmax-zmin+increment_z 
+
+### do cut
+
+  disc.move! Geom::Transformation.new [0,0,z] ### first placing near bottom 
+
+  discentities.intersect_with true, disc.transformation, vol, vol.transformation, true, selected
+
+  z = z+increment_z
+
+  c = c+1
+
+end#while
+
+### delete disc
+
+disc.erase!
+
+### face the slices
+
+for e in volentities
+
+  e.find_faces if e.typename == "Edge"
+
+end#for e
+
+###
+
+faces = []
+
+for f in volentities
+
+   if f.typename == "Face"
+
+      faces = faces.push(f)
+
+   end
+
+end#for f
+
+faces=faces.uniq
+
+###
+
+for face in faces
+
+   face.reverse! if face.normal==[0,0,-1] ### now all face up
+
+end#for face
+
+### now work out which is which...
+
+keptfaces = []
+
+(faces.length-1).times do |this|
+
+   for face in faces
+
+    if face.valid?
+
+      for edgeuse in face.outer_loop.edgeuses
+
+         if not edgeuse.partners[0] ### outermost face
+
+            keptfaces = keptfaces.push(face)
+
+            faces = faces - [face]
+
+            loops = face.loops
+
+            for loop in loops
+
+               for fac in faces
+
+                  if fac.valid? and (fac.outer_loop.edges - loop.edges) == []
+
+                     faces = faces - [fac]
+
+                     fac.erase!### fac abutts kept face so it must be erased...
+
+                  end #if fac
+
+               end #for fac
+
+            end #for loop
+
+         end #if outermost
+
+      end #for edgeuse
+
+    end #if valid
+
+   end #for face
+
+end#times
+
+### -------------- now find area of all edges etc
+
+colour=@colour
+
+colour=nil if colour=="<Default>"
+
+area = 0
+
+for f in volentities
+
+  f.material=colour if f.typename=="Face"
+
+  area=(area+f.area) if f.typename=="Face"
+
+  ###f.erase! if f.typename == "Edge" and not f.faces[0]
+
+  f.hidden= true if (f.valid? && f.typename=="Edge") && @hidden=="Yes"
+
+end#for f
+
+###
+
+if area==0
+
+   UI.beep
+
+   UI.messagebox("There is NO Volume !")
+
+   vol.erase! if vol.valid?
+
+   return nil
+
+end#if
+
+# --------------- get volume ----
+
+
+volume=(area*increment_z)### in cubic inches
+
+
+# ---------------------- Close/commit group
+
 mod.commit_operation
 
+#-----------------------
+
+puts volume
+
 end #BackFillModel::slice 
+
+def BackFillModel::dialog
+
+### get units and accuracy etc
+
+   resolution = ["0.1", "0.2", "0.3", "0.4", "0.5"].join('|')
+
+   mcolours=Sketchup.active_model.materials
+
+   colours=[]
+
+   mcolours.each{|e|colours.push e.name}
+
+   colours.sort!
+
+   colours=colours+["<Default>"]+(Sketchup::Color.names.sort!)
+
+   colours.uniq!
+
+   colours=colours.join('|')
+
+   prompts = ["Slice mm: ","Colour: "]
+
+   title = "Paramters"
+
+   @colour="<Default>" if not @colour
+
+   values = [@resolution,@colour]
+
+   popups = [resolution,colours]
+
+   results = inputbox(prompts,values,popups,title)
+
+   return nil if not results
+
+### do processing of results
+
+@resolution,@colour=results
+
+true
+
+###
+
+end #def dialog
+
 end #class
 
 ########################################################################
