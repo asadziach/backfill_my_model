@@ -17,56 +17,6 @@ require 'sketchup.rb'
 
 class BackFillModel
 
-########################################################################
-########################################################################
-def BackFillModel::envCheck
-
-if (Sketchup.version.split(".")[0].to_i<16)
-
-     UI.beep
-
-     UI.messagebox("Sorry. Only verified with Sketchup version 16.")
-
-     return false
-
-end#if
-
-mod = Sketchup.active_model # Open model
-ent = mod.entities # All entities in model
-sel = mod.selection # Current selection
-
-if sel.empty?
-
-    UI.beep
-
-    UI.messagebox("NO Selection !")
-
-    return false
-
-end #if
-
-if sel[1]
-
-    UI.beep
-
-    UI.messagebox("Selection MUST be ONE Group or Component !")
-
-    return false
-
-end# if
-
-if sel[0].typename != "Group" and sel[0].typename != "ComponentInstance"
-
-    UI.beep
-
-    UI.messagebox("Selection is NOT a Group or Component !")
-
-    return false
-end#if
-
-return true
-
-end #BackFill::envCheck
 
 ########################################################################
 ########################################################################
@@ -415,7 +365,7 @@ true
 
 ###
 
-end #def dialog
+end #def BackFill::dialog
 
 ########################################################################
 ########################################################################
@@ -442,6 +392,57 @@ def BackFillModel::circle(center,normal,radius,numseg)
     pts.push(pts[0].clone)
     pts
 end #def BackFillModel""circle
+
+########################################################################
+########################################################################
+def BackFillModel::envCheck
+
+if (Sketchup.version.split(".")[0].to_i<16)
+
+     UI.beep
+
+     UI.messagebox("Sorry. Only verified with Sketchup version 16.")
+
+     return false
+
+end#if
+
+mod = Sketchup.active_model # Open model
+ent = mod.entities # All entities in model
+sel = mod.selection # Current selection
+
+if sel.empty?
+
+    UI.beep
+
+    UI.messagebox("NO Selection !")
+
+    return false
+
+end #if
+
+if sel[1]
+
+    UI.beep
+
+    UI.messagebox("Selection MUST be ONE Group or Component !")
+
+    return false
+
+end# if
+
+if sel[0].typename != "Group" and sel[0].typename != "ComponentInstance"
+
+    UI.beep
+
+    UI.messagebox("Selection is NOT a Group or Component !")
+
+    return false
+end#if
+
+return true
+
+end #BackFill::envCheck
 
 end #class BackFillModel
 
