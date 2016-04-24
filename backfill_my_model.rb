@@ -46,15 +46,6 @@ sel_group_ent = sel_group.entities
 mod.start_operation("Volume Analysis")
 
 
-external_faces = Set.new []
-
- # Do this for each face
-sel_group_ent.each { |f|
-    if f.typename == "Face"
-        external_faces.add(f)
-    end
-}
-
 ###
 
 selected = sel[0]
@@ -292,6 +283,17 @@ mod.start_operation("Coloring")
 #        f.material = [128,0,0]
 #end #for
 
+sel_group.explode
+
+external_faces = Set.new []
+
+ # Do this for each face
+mod.active_entities.each { |f|
+    if f.typename == "Face"
+        external_faces.add(f)
+    end
+}
+
 for e in too_short_edges
                  
     for f in e.faces
@@ -349,7 +351,7 @@ def BackFillModel::dialog
 
 ### get units and accuracy etc
 
-   resolution = ["0.1", "0.2", "0.3", "0.4", "0.5"].join('|')
+   resolution = ["0.1", "0.2", "0.3", "0.4", "0.5", "10"].join('|')
 
    wall_thickness = ["0.5", "1.0", "1.5", "2", "2.5"].join('|')
 
