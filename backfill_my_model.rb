@@ -268,6 +268,20 @@ for f in volentities
 
 end#for f
 
+markers = []
+## save vertices
+for e in too_short_edges
+    vertices = e.vertices
+    for v in vertices 
+        point =  v.position
+        puts point.inspect   
+        markers.push(point)             
+
+    end #for
+    printf " "
+end #for
+
+
 mod.commit_operation
 
 if UI.messagebox("Remove added gematry ?  ",MB_YESNO,"Cleanup Temp ?") == 6 ### 6=YES 7=NO
@@ -278,10 +292,6 @@ end#if
 
 mod.start_operation("Coloring")
 
-#for f in too_short_faces
-                 
-#        f.material = [128,0,0]
-#end #for
 
 sel_group.explode
 
@@ -294,13 +304,26 @@ mod.active_entities.each { |f|
     end
 }
 
-for e in too_short_edges
-                 
-    for f in e.faces
-        if (external_faces.include? f)                 
-            f.material = [0,128,0]
-        end #if
-    end #for
+faces_to_color = []
+
+for point in markers
+    external_faces.each { |f|
+ #       if f.typename == "Face"
+            res = point.distance_to_plane(f.plane) 
+            puts res
+            if (res < 0.99 ) # Sketchup seem to place them slightly off 
+                faces_to_color.push(f)
+                puts " ADDED"
+            else
+                puts " REJECTED"                
+            end #if
+#        end
+    }
+
+end #for
+
+for f in faces_to_color         
+    f.material = [0,128,0]
 end #for
 
 ###
