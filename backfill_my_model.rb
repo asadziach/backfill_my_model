@@ -43,7 +43,6 @@ sel_group = sel[0]
 sel_size = sel_group.bounds.max # Get the first selected group
 sel_group_ent = sel_group.entities
 
-mod.start_operation("Volume Analysis")
 
 
 ###
@@ -84,10 +83,17 @@ if xmin == xmax or ymin == ymax or zmin == zmax
 end#if
 
 ###
+mod.start_operation("Move to origin")
 
+trans = Geom::Transformation.new(bb.corner(0).vector_to(ORIGIN)) ;  # move the temp bounding box 
 
+Sketchup.active_model.entities.transform_entities(trans, sel.to_a ) ; 
+
+mod.commit_operation ; 
 
 #### ------- slice & z inc ------------------------------
+
+mod.start_operation("Volume Analysis")
 
 slice = @resolution.to_f * 0.0393701 ### convert mm to inches
 
@@ -361,7 +367,7 @@ external_faces.each { |f|
             puts d1
             puts " "
             puts d2
-            if (d1 < 0.9 && d2 < 0.9) # Sketchup seem to place them slightly off 
+            if (d1==0 && d2 == 0) # Sketchup seem to place them slightly off 
                 faces_to_color.push(f)
                 puts " ADDED"
             else
