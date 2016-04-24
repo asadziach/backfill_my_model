@@ -130,11 +130,9 @@ zmin = zmin+(increment_z/ 2)
 
 # ------------------------ do each of slice
 
-vol= sel[0] #ent.add_group
+vol= sel[0] 
 
 volentities=vol.entities
-
-#vol.name="Volume-"+@sfix
 
 
 ### loop through all possible slices - bottom up
