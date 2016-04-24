@@ -9,7 +9,7 @@ It is prototype of a tool that will accept a very thin (scaled down), or "surfac
 
 To use, open the 3D model in Sketchup Make 2016. It can take stl via a free plugin.
 
-Open Ruby console and paste the contants of backfill_my_model.rb. 
+Open Ruby console and paste the contents of backfill_my_model.rb. 
 
 Select and create a group of the model.
 
