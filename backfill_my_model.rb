@@ -377,7 +377,7 @@ external_faces.each { |f|
 
 
 for f in faces_to_color         
-    f.material = [0,128,0]
+    f.material = colour
 end #for
 
 extrude_amount = 0.5 * 0.0393701; #TODO add backfill with the amount calculated earlier
@@ -391,18 +391,13 @@ if area==0
 
    UI.beep
 
-   UI.messagebox("There is NO Volume !")
+   UI.messagebox("There is NO Volume, work in progress not all figures will work !")
 
    vol.erase! if vol.valid?
 
    return nil
 
 end#if
-
-# --------------- get volume ----
-
-
-volume=(area*increment_z)### in cubic inches
 
 
 # ---------------------- Close/commit group
@@ -411,21 +406,6 @@ mod.commit_operation
 
 #-----------------------
 
-puts volume
-
-#mod.start_operation("Cleanup Temp Geometry")
-
-if UI.messagebox("Remove Coloring ?  ",MB_YESNO,"Cleanup All ?") == 6 ### 6=YES 7=NO
-
-    Sketchup.undo
-
-end#if
-
-# ---------------------- Close/commit group
-
-#mod.commit_operation
-
-#-----------------------
 
 end #BackFillModel::slice 
 
