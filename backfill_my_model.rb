@@ -104,10 +104,6 @@ increment_z = (zmax-zmin)/(((zmax-zmin)/slice).ceil)
 
 ###
 
-apex = Geom.linear_combination(0.5,[xmin,ymin,zmax+2],0.5,[xmax,ymax,zmax+2])
-
-### +2 puts it above top ( for text loc'n )
-
 pnt1 = [xmin,ymin,zmin] 
 
 pnt2 = [xmax,ymax,zmin] 
