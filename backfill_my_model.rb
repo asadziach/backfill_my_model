@@ -244,7 +244,7 @@ colour=nil if colour=="<Default>"
 area = 0
 
 too_short_faces = Set.new []
-too_short_edges = Set.new []
+seg_to_pull = []
 
 for f in volentities
 
@@ -257,9 +257,17 @@ for f in volentities
 
         short_edges = 0
 
+        pull_next = false
         edges.each { |e|
+            if pull_next
+                pts = []
+                pts[0] = e.vertices[0].position
+                pts[1] = e.vertices[1].position
+                seg_to_pull.push(pts) 
+                pull_next = false
+            end
             if e.length < wal_threshold
-                too_short_edges.add(e)
+                pull_next = true
                 short_edges = short_edges + 1 
             end #if
         }
@@ -267,20 +275,6 @@ for f in volentities
     end #if
 
 end#for f
-
-markers = []
-## save vertices
-for e in too_short_edges
-    vertices = e.vertices
-    for v in vertices 
-        point =  v.position
-        puts point.inspect   
-        markers.push(point)             
-
-    end #for
-    printf " "
-end #for
-
 
 mod.commit_operation
 
@@ -306,21 +300,25 @@ mod.active_entities.each { |f|
 
 faces_to_color = []
 
-for point in markers
-    external_faces.each { |f|
- #       if f.typename == "Face"
-            res = point.distance_to_plane(f.plane) 
-            puts res
-            if (res < 0.9 ) # Sketchup seem to place them slightly off 
+
+external_faces.each { |f|
+    for virtex_pair in seg_to_pull
+            point1 = virtex_pair[0]
+            point2 = virtex_pair[1]
+            d1 = point1.distance_to_plane(f.plane) 
+            d2 = point2.distance_to_plane(f.plane) 
+            puts d1
+            puts " "
+            puts d2
+            if (d1 < 0.9 && d2 < 0.9) # Sketchup seem to place them slightly off 
                 faces_to_color.push(f)
                 puts " ADDED"
             else
                 puts " REJECTED"                
             end #if
-#        end
-    }
+    end #for
+ }
 
-end #for
 
 for f in faces_to_color         
     f.material = [0,128,0]
