@@ -311,7 +311,7 @@ for point in markers
  #       if f.typename == "Face"
             res = point.distance_to_plane(f.plane) 
             puts res
-            if (res < 0.99 ) # Sketchup seem to place them slightly off 
+            if (res < 0.9 ) # Sketchup seem to place them slightly off 
                 faces_to_color.push(f)
                 puts " ADDED"
             else
