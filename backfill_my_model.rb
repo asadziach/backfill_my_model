@@ -43,7 +43,7 @@ sel_group = sel[0]
 sel_size = sel_group.bounds.max # Get the first selected group
 sel_group_ent = sel_group.entities
 
-mod.start_operation("coloring faces")
+mod.start_operation("Volume Analysis")
 
 
 external_faces = Set.new []
@@ -110,7 +110,7 @@ pnt2 = [xmax,ymax,zmin]
 
 ctr = Geom.linear_combination(0.5,pnt1,0.5,pnt2)
 
-rad = (pnt1.distance pnt2)### make a LOT bigger than bb ###v1.3
+rad = (pnt1.distance pnt2)### make a LOT bigger than bb 
 
 ###
 
@@ -124,7 +124,7 @@ discentities.add_face disccircle
 
 ###
 
-#--------------------------- reset Z max and min's
+#--------------------------- reset Z min
 
 
 zmin = zmin+(increment_z/ 2)
@@ -133,11 +133,11 @@ zmin = zmin+(increment_z/ 2)
 
 # ------------------------ do each of slice
 
-vol=ent.add_group
+vol= sel[0] #ent.add_group
 
 volentities=vol.entities
 
-vol.name="Volume-"+@sfix
+#vol.name="Volume-"+@sfix
 
 
 ### loop through all possible slices - bottom up
@@ -277,17 +277,27 @@ for f in volentities
 
 end#for f
 
-for f in too_short_faces
+mod.commit_operation
+
+if UI.messagebox("Remove added gematry ?  ",MB_YESNO,"Cleanup Temp ?") == 6 ### 6=YES 7=NO
+
+    Sketchup.undo
+
+end#if
+
+mod.start_operation("Coloring")
+
+#for f in too_short_faces
                  
-        f.material = [128,0,0]
-end #for
+#        f.material = [128,0,0]
+#end #for
 
 for e in too_short_edges
                  
     for f in e.faces
-        #if (external_faces.include? f)                 
+        if (external_faces.include? f)                 
             f.material = [0,128,0]
-        #end #if
+        end #if
     end #for
 end #for
 
@@ -319,19 +329,17 @@ mod.commit_operation
 
 puts volume
 
-mod.start_operation("Cleanup Temp Geometry")
+#mod.start_operation("Cleanup Temp Geometry")
 
-if UI.messagebox("Remove added gematry ?  ",MB_YESNO,"Cleanup Temp ?") == 6 ### 6=YES 7=NO
-    for f in volentities
+if UI.messagebox("Remove Coloring ?  ",MB_YESNO,"Cleanup All ?") == 6 ### 6=YES 7=NO
 
-      f.erase!
+    Sketchup.undo
 
-    end#for f
 end#if
 
 # ---------------------- Close/commit group
 
-mod.commit_operation
+#mod.commit_operation
 
 #-----------------------
 
