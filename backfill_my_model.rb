@@ -309,6 +309,7 @@ for f in planer_faces
             end
             if e.length < wal_threshold
                 pull_next = true 
+                # TODO calculate the amount to backfill requied and bundle it
             end #if
         end #for
         if pull_next #if last one was short
@@ -377,6 +378,11 @@ external_faces.each { |f|
 
 for f in faces_to_color         
     f.material = [0,128,0]
+end #for
+
+extrude_amount = 0.5 * 0.0393701; #TODO add backfill with the amount calculated earlier
+for f in faces_to_color         
+    f.pushpull(extrude_amount, false) 
 end #for
 
 ###
