@@ -243,22 +243,59 @@ colour=nil if colour=="<Default>"
 
 area = 0
 
-too_short_faces = Set.new []
 seg_to_pull = []
 
+facecount = 0
+edgecount = 0
+
+planer_faces = []
 for f in volentities
 
-    if f.typename=="Face"    
+    if f.typename=="Face"
+
+        if f.vertices.length == 4
+            flat = false
+            v = f.vertices
+
+            print v[0].position.z
+            print " "
+            print v[1].position.z
+            print " "
+            print v[2].position.z
+            print " "
+            print v[3].position.z
+            puts ""
+
+            if (v[0].position.z == v[1].position.z) &&  (v[2].position.z == v[3].position.z ) && (v[1].position.z == v[2].position.z )
+                flat = true if (v[0].position.z != bb.min.z) && ( v[0].position.z != bb.max.z)
+            end
+
+        end
+        facecount = facecount +1 if flat
+        planer_faces.push(f) if flat
+    end
+    if f.typename=="Edge"
+        edgecount = edgecount +1
+    end
+end
+
+print "faces "
+print facecount
+print " edges " 
+print edgecount
+puts ""
+   
+for f in planer_faces
+
+#    if f.typename=="Face"    
         f.material=colour 
 
         area=(area+f.area) 
 
         edges = f.edges  # for all edages of this face
 
-        short_edges = 0
-
         pull_next = false
-        edges.each { |e|
+        for e in edges
             if pull_next
                 pts = []
                 pts[0] = e.vertices[0].position
@@ -267,12 +304,18 @@ for f in volentities
                 pull_next = false
             end
             if e.length < wal_threshold
-                pull_next = true
-                short_edges = short_edges + 1 
+                pull_next = true 
             end #if
-        }
-        too_short_faces.add(f) if short_edges >= 2
-    end #if
+        end #for
+        if pull_next #if last one was short
+            pts = []
+            pts[0] = edges[0].vertices[0].position
+            pts[1] = edges[0].vertices[1].position
+            seg_to_pull.push(pts) 
+            pull_next = false
+        end
+        
+ #   end #if
 
 end#for f
 
@@ -300,6 +343,14 @@ mod.active_entities.each { |f|
 
 faces_to_color = []
 
+for virtex_pair in seg_to_pull
+        point1 = virtex_pair[0]
+        point2 = virtex_pair[1]
+        print point1
+        print " "
+        print point2
+        puts ""
+end #for
 
 external_faces.each { |f|
     for virtex_pair in seg_to_pull
