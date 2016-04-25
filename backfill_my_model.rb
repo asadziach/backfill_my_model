@@ -261,14 +261,14 @@ for f in volentities
             flat = false
             v = f.vertices
 
-            print v[0].position.z
-            print " "
-            print v[1].position.z
-            print " "
-            print v[2].position.z
-            print " "
-            print v[3].position.z
-            puts ""
+#            print v[0].position.z
+#            print " "
+#            print v[1].position.z
+#            print " "
+#            print v[2].position.z
+#            print " "
+#            print v[3].position.z
+#            puts ""
 
             if (v[0].position.z == v[1].position.z) &&  (v[2].position.z == v[3].position.z ) && (v[1].position.z == v[2].position.z )
                 flat = true if (v[0].position.z != bb.min.z) && ( v[0].position.z != bb.max.z)
@@ -363,14 +363,14 @@ external_faces.each { |f|
             point2 = virtex_pair[1]
             d1 = point1.distance_to_plane(f.plane) 
             d2 = point2.distance_to_plane(f.plane) 
-            puts d1
-            puts " "
-            puts d2
+#            puts d1
+#            puts " "
+#            puts d2
             if (d1==0 && d2 == 0) # Sketchup seem to place them slightly off 
                 faces_to_color.push(f)
-                puts " ADDED"
+#                puts " ADDED"
             else
-                puts " REJECTED"                
+#                puts " REJECTED"                
             end #if
     end #for
  }
