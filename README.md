@@ -26,6 +26,11 @@ It is prototype of a tool that will accept a very thin (scaled down), or "surfac
 
 - The intersection slices forms new edges. It calls 'find_faces' API on new edges. This creates new faces that will be used for analyzing thin walls.
 
-- There is known issue that edges on some surfaces failed to form a face with the 'find_faces' e.g see below
+### Known Issues
+
+- Edges on some surfaces failed to form a face with the 'find_faces' above e.g see below. This will affect the thin wall detection (that depands on faces).
 
 ![known issues](https://i.imgsafe.org/83db15f.png "known issues")
+
+- In some cases, SketchUp creates new face objects during the push-pull operation and deletes old one. This will cause the following error:
+`Error: #<TypeError: reference to deleted Face>`
