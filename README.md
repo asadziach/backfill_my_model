@@ -17,3 +17,15 @@ It is prototype of a tool that will accept a very thin (scaled down), or "surfac
 - Select and create a group of the model.
 
 - Right click and select "Backfill My Model" option
+
+- A dialog asks for the minimum wall thickness and the layer (slice) size. A smaller size is more accurate but takes longer to process. The processing time will also increase with more complex models.
+
+- Optional color parameter will paint the faces added and changed for easy identification. Color value 'Default' disables it.
+
+- It moves the model to origin and creates a small disk. The disk is stepped up according to step size. It then calculates a series of thin horizontal slices through the selection's faces
+
+- The intersection slices forms new edges. It calls 'find_faces' API on new edges. This creates new faces that will be used for analyzing thin walls.
+
+- There is known issue that edges on some surfaces failed to form a face with the 'find_faces' e.g see below
+
+![known issues](https://i.imgsafe.org/83db15f.png "known issues")
