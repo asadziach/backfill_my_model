@@ -35,3 +35,5 @@ It is prototype of a tool that will accept a very thin (scaled down), or "surfac
 - Sometimes the faces next to the thin walls gets incorrectly marked to be 'pulled'
 
 - There are lot of printfs for debugging. This reduces execution speed.
+
+- The selected group end up in 'exploded' state at the end of operation.
