@@ -13,4 +13,4 @@ Open Ruby console and paste the contents of backfill_my_model.rb.
 
 Select and create a group of the model.
 
-Right click and select "Backfill My model option"
+Right click and select "Backfill My Model" option
