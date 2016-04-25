@@ -382,7 +382,7 @@ end #for
 
 extrude_amount = 0.5 * 0.0393701; #TODO add backfill with the amount calculated earlier
 for f in faces_to_color         
-    f.pushpull(extrude_amount, false) 
+    f.pushpull(extrude_amount, false) if f.valid? # sometimes SketchUp creates new face objects during the push-pull operation and deletes old one
 end #for
 
 ###

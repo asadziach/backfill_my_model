@@ -32,5 +32,6 @@ It is prototype of a tool that will accept a very thin (scaled down), or "surfac
 
 ![known issues](https://i.imgsafe.org/83db15f.png "known issues")
 
-- In some cases, SketchUp creates new face objects during the push-pull operation and deletes old one. This will cause the following error:
-`Error: #<TypeError: reference to deleted Face>`
+- Sometimes the faces next to the thin walls gets incorrectly marked to be 'pulled'
+
+- There are lot of printfs for debugging. This reduces execution speed.
