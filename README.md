@@ -22,7 +22,7 @@ It is prototype of a tool that will accept a very thin (scaled down), or "surfac
 
 - Optional color parameter will paint the faces added and changed for easy identification. Color value 'Default' disables it.
 
-- It moves the model to origin and creates a small disk. The disk is stepped up according to step size. It then calculates a series of thin horizontal slices through the selection's faces
+- It moves the model to origin and creates a disk. The disk is stepped up according to step size. It then calculates a series of thin horizontal slices through the selection's faces
 
 - The intersection slices forms new edges. It calls 'find_faces' API on new edges. This creates new faces that will be used for analyzing thin walls.
 
