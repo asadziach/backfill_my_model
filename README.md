@@ -37,3 +37,6 @@ It is prototype of a tool that will accept a very thin (scaled down), or "surfac
 - There are lot of printfs for debugging. This reduces execution speed.
 
 - The selected group end up in 'exploded' state at the end of operation.
+
+### Future work
+Implement a configurable threshold that controls how many slices need to mark a face for “backfilling” before it is pulled out. This will protect incorrect backfilling of features.
